@@ -1,8 +1,12 @@
-﻿services:
+﻿version: '3.9'
+
+services:
   catalogdb:
     image: mongo
+    ports:
+      - "27017:27017"
   catalog.api:
-    image: catalog.api
+    image: ${DOCKER_REGISTRY-}catalogapi
     build:
       context: .
       dockerfile: Services/Catalog/Catalog.API/Dockerfile
