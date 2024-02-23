@@ -1,8 +1,23 @@
+using Asp.Versioning;
+using Asp.Versioning.Builder;
 using Catalog.API.Data;
 using Catalog.API.Repositories;
 using static Catalog.API.Endpoints;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddApiVersioning(options =>
+{
+    options.DefaultApiVersion = new ApiVersion(1);
+    options.ReportApiVersions = true;
+    options.AssumeDefaultVersionWhenUnspecified = true;
+    options.ApiVersionReader = ApiVersionReader.Combine(
+        new UrlSegmentApiVersionReader(),
+        new HeaderApiVersionReader("X-Api-Version"));
+}).AddApiExplorer(options =>
+{
+    options.GroupNameFormat = "'v'V";
+    options.SubstituteApiVersionInUrl = true;
+});
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<ICatalogContext, CatalogContext>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
@@ -13,5 +28,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-app.CatalogRoutes();
+ApiVersionSet apiVersionSet = app.NewApiVersionSet()
+    .HasApiVersion(new ApiVersion(1))
+    .ReportApiVersions()
+    .Build();
+
+app.CatalogRoutes(apiVersionSet);
 app.Run();
