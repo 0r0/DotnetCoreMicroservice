@@ -10,7 +10,7 @@ public static class Endpoints
         ApiVersionSet apiVersionSet)
     {
         RouteGroupBuilder group = application
-            .MapGroup("api/v{version:apiVersion}/{basket}")
+            .MapGroup("api/v{version:apiVersion}/")
             .WithApiVersionSet(apiVersionSet);
 
         group.MapGet("/Basket/{userName}",

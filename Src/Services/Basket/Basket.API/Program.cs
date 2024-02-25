@@ -1,3 +1,6 @@
+using Asp.Versioning;
+using Asp.Versioning.Builder;
+using Basket.API;
 using Basket.API.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,6 +14,19 @@ builder.Services.AddStackExchangeRedisCache(opt =>
 );
 builder.Services.AddScoped<IBasketRepository, BasketRepository>();
 
+builder.Services.AddApiVersioning(options =>
+{
+    options.DefaultApiVersion = new ApiVersion(1);
+    options.ReportApiVersions = true;
+    options.AssumeDefaultVersionWhenUnspecified = true;
+    options.ApiVersionReader = ApiVersionReader.Combine(
+        new UrlSegmentApiVersionReader(),
+        new HeaderApiVersionReader("X-Api-Version"));
+}).AddApiExplorer(options =>
+{
+    options.GroupNameFormat = "'v'V";
+    options.SubstituteApiVersionInUrl = true;
+});
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -21,6 +37,10 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+ApiVersionSet apiVersionSet = app.NewApiVersionSet()
+    .HasApiVersion(new ApiVersion(1))
+    .ReportApiVersions()
+    .Build();
+app.BasketRoutes(apiVersionSet);
 
 app.Run();
