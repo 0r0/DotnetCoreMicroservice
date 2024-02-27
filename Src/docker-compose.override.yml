@@ -27,6 +27,30 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - portainer_data:/data
   
+  pgadmin:
+    container_name: pgadmin
+    restart: always
+    ports:
+      - "5050:80"
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=mehdi.goharinezhad@gmail.com
+      - PGADMIN_DEFAULT_PASSWORD=admin@123
+    volumes:
+      - pgadmin_data:/root/.pgadmin
+  
+  discountdb:
+    container_name: discountdb
+    restart: always
+    environment:
+      - POSTGRES_USER=admin 
+      - POSTGRES_PASSWORD=admin1234
+      - POSTGRES_DB=DiscountDB 
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data    
+  
+  
   
   
   catalog.api:

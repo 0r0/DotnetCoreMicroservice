@@ -6,18 +6,30 @@ services:
     ports:
       - "27017:27017"
   
+  
   basketdb:
     image: redis
+  
+    
+  discountdb:
+    image: postgres
+  
     
   portainer:
     image: portainer/portainer-ce
   
   
+  pgadmin:
+    image: dpage/pgadmin4
+    
+    
   catalog.api:
     image: ${DOCKER_REGISTRY-}catalogapi
     build:
       context: .
       dockerfile: Services/Catalog/Catalog.API/Dockerfile
+      
+      
   basket.api:
     image: ${DOCKER_REGISTRY-}basketapi
     build:
@@ -25,6 +37,14 @@ services:
       dockerfile: Services/Basket/Basket.API/Dockerfile
       
       
+  discount.api:
+    image: ${DOCKER_REGISTRY-}discountapi
+    build:
+      context: .
+      dockerfile: Services/Discount/Discount.API/Dockerfile
+      
 volumes:
   mongo_data: 
   portainer_data: 
+  postgres_data:
+  pgadmin_data:
