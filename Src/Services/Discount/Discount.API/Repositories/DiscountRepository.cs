@@ -18,12 +18,10 @@ public class DiscountRepository : IDiscountRepository
     {
         if (productName == null)
             throw new NullReferenceException("Product name can not be null");
-        await using var connection = new NpgsqlConnection(_configuration.GetValue<string>("ConnectionStrings"));
-        var coupon = await connection.QueryFirstOrDefault("select * from Coupon where ProductName = @ProductName",
-            param: new {ProductName = productName});
-        return coupon == null
-            ? new Coupon() {ProductName = "No Discount", Amount = 0, Description = "No discount"}
-            : coupon;
+        await using var connection = new NpgsqlConnection(_configuration.GetValue<string>("DatabaseSettings:ConnectionString"));
+        var coupon = (await connection.QueryFirstOrDefaultAsync<Coupon>("select * from Coupon where ProductName = @ProductName",
+            param: new {ProductName = productName}).ConfigureAwait(false)) ;
+        return coupon ?? new Coupon() {ProductName = "No Discount", Amount = 0, Description = "No discount"};
     }
 
     public async Task<bool> CreateDiscount(Coupon coupon)
@@ -34,7 +32,7 @@ public class DiscountRepository : IDiscountRepository
         var affected =
             await connection.ExecuteAsync
             ("INSERT INTO Coupon (ProductName, Description, Amount) VALUES (@ProductName, @Description, @Amount)",
-                new {ProductName = coupon.ProductName, Description = coupon.Description, Amount = coupon.Amount});
+                new {ProductName = coupon.ProductName, Description = coupon.Description, Amount = coupon.Amount}).ConfigureAwait(false);
 
         if (affected == 0)
             return false;
@@ -44,7 +42,7 @@ public class DiscountRepository : IDiscountRepository
 
     public async Task<bool> UpdateDiscount(Coupon coupon)
     {
-        using var connection =
+        await using var connection =
             new NpgsqlConnection(_configuration.GetValue<string>("DatabaseSettings:ConnectionString"));
 
         var affected = await connection.ExecuteAsync
@@ -53,7 +51,7 @@ public class DiscountRepository : IDiscountRepository
             {
                 ProductName = coupon.ProductName, Description = coupon.Description, Amount = coupon.Amount,
                 Id = coupon.Id
-            });
+            }).ConfigureAwait(false);
 
         if (affected == 0)
             return false;
@@ -63,7 +61,7 @@ public class DiscountRepository : IDiscountRepository
 
     public async Task<bool> DeleteDiscount(string productName)
     {
-        using var connection =
+         await using var connection =
             new NpgsqlConnection(_configuration.GetValue<string>("DatabaseSettings:ConnectionString"));
 
         var affected = await connection.ExecuteAsync("DELETE FROM Coupon WHERE ProductName = @ProductName",
