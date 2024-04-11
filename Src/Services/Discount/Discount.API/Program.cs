@@ -39,5 +39,6 @@ ApiVersionSet apiVersionSet = app.NewApiVersionSet()
     .ReportApiVersions()
     .Build();
 app.DiscountRoutes(apiVersionSet);
+app.MigrateDatabase();
 app.Run();
 
