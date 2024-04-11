@@ -1,0 +1,23 @@
+# This is a generated file. Not intended for manual editing.
+version: "3.9"
+services:
+  discount.api:
+    build:
+      context: "C:\\Users\\mehdi\\RiderProjects\\DotnetCoreMicroservice\\Src"
+      dockerfile: "Services/Discount/Discount.API/Dockerfile"
+      target: "base"
+    command: []
+    entrypoint:
+    - "dotnet"
+    - "/app/bin/Debug/net8.0/Discount.API.dll"
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Development"
+      DOTNET_USE_POLLING_FILE_WATCHER: "true"
+    image: "discountapi:dev"
+    ports: []
+    volumes:
+    - "C:\\Users\\mehdi\\.nuget\\packages:/root/.nuget/packages"
+    - "C:\\Users\\mehdi\\RiderProjects\\DotnetCoreMicroservice\\Src\\Services\\Discount\\\
+      Discount.API:/app:rw"
+    - "C:\\Users\\mehdi\\RiderProjects\\DotnetCoreMicroservice\\Src:/src:rw"
+    working_dir: "/app"
