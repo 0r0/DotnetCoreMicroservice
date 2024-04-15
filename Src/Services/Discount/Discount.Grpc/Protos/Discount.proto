@@ -20,10 +20,11 @@ message  UpdateDiscountRequest{
   CouponModel coupon = 1 ;
 }
 message  DeleteDiscountRequest{
-  CouponModel coupon = 1 ;
+  string productName = 1;
 }
 message  DeleteDiscountResponse{
-  string productName = 1;
+  
+  bool Success =1;
 }
 
 message CouponModel {

@@ -1,4 +1,5 @@
-﻿using Discount.Grpc.Protos;
+﻿using Discount.Grpc.Entities;
+using Discount.Grpc.Protos;
 using Discount.Grpc.Repositories;
 using Grpc.Core;
 
@@ -32,6 +33,40 @@ public class DiscountService : DiscountProtoService.DiscountProtoServiceBase
 
     public override async Task<CouponModel> CreateDiscount(CreateDiscountRequest request, ServerCallContext context)
     {
-        return await base.CreateDiscount(request, context);
+        await _repository.CreateDiscount(new Coupon()
+        {
+            ProductName = request.Coupon.ProductName,
+            Description = request.Coupon.Description,
+            Amount = request.Coupon.Amount,
+            Id = request.Coupon.Id
+        }).ConfigureAwait(false);
+        _logger.LogInformation("Discount is successfully created . ProductName : {ProductName}",
+            request.Coupon.ProductName);
+        return request.Coupon;
+    }
+
+    public override async Task<DeleteDiscountResponse> DeleteDiscount(DeleteDiscountRequest request,
+        ServerCallContext context)
+    {
+        var deleted = await _repository.DeleteDiscount(request.ProductName);
+
+        return new DeleteDiscountResponse()
+        {
+            Success = deleted
+        };
+    }
+
+    public override async Task<CouponModel> UpdateDiscount(UpdateDiscountRequest request, ServerCallContext context)
+    {
+        var success = await _repository.UpdateDiscount(new Coupon()
+        {
+            Id = request.Coupon.Id,
+            ProductName = request.Coupon.ProductName,
+            Description = request.Coupon.Description,
+            Amount = request.Coupon.Amount
+        }).ConfigureAwait(false);
+        if (!success)
+            throw new InvalidOperationException("update discount is not happen");
+        return request.Coupon;
     }
 }
