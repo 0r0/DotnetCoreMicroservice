@@ -1,5 +1,6 @@
 ﻿using Asp.Versioning.Builder;
 using Basket.API.Entities;
+using Basket.API.GrpcServices;
 using Basket.API.Repositories;
 
 namespace Basket.API;
@@ -23,8 +24,14 @@ public static class Endpoints
 
 
         group.MapPost("/Basket/",
-            async (ShoppingCart shoppingCart, IBasketRepository repository) =>
+            async (ShoppingCart shoppingCart, IBasketRepository repository,DiscountGrpcService service) =>
             {
+                //get discount coupon amount and subtract from shopping cards item price
+                foreach (var item in shoppingCart.Items)
+                {
+                    var coupon = await service.GetDiscount(item.ProductName);
+                    item.Price -= coupon.Amount;
+                }
                 await repository.UpdateBasket(shoppingCart);
                 return Results.Ok(shoppingCart);
             });
