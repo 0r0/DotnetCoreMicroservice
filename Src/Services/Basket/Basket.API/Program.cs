@@ -1,7 +1,10 @@
+using System.Data;
 using Asp.Versioning;
 using Asp.Versioning.Builder;
 using Basket.API;
+using Basket.API.GrpcServices;
 using Basket.API.Repositories;
+using Discount.Grpc.Protos;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,7 +15,12 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddStackExchangeRedisCache(opt =>
     opt.Configuration = builder.Configuration.GetValue<string>("CacheSetting:ConnectionString")
 );
+
 builder.Services.AddScoped<IBasketRepository, BasketRepository>();
+
+builder.Services.AddGrpcClient<DiscountProtoService.DiscountProtoServiceClient>(a
+    =>a.Address = new Uri(builder.Configuration.GetValue<string>("GrpcSetting:DiscountUrl") ?? throw new NoNullAllowedException("Grpc Setting can not be null or empty")));
+builder.Services.AddScoped<DiscountGrpcService>();
 
 builder.Services.AddApiVersioning(options =>
 {
