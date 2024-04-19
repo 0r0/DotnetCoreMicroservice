@@ -7,7 +7,6 @@ namespace Discount.API.Repositories;
 public class DiscountRepository : IDiscountRepository
 {
     private readonly IConfiguration _configuration;
-    private readonly NpgsqlConnection _connection;
 
     public DiscountRepository(IConfiguration configuration)
     {
