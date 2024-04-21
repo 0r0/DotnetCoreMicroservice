@@ -10,4 +10,10 @@
       <ProjectReference Include="..\Ordering.Domain\Ordering.Domain.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="behaviours\" />
+      <Folder Include="Contracts\Infrastructure\" />
+      <Folder Include="Features\" />
+    </ItemGroup>
+
 </Project>
