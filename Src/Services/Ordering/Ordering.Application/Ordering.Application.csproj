@@ -12,11 +12,11 @@
 
     <ItemGroup>
       <Folder Include="behaviours\" />
-      <Folder Include="Features\Orders\Commands\" />
     </ItemGroup>
 
     <ItemGroup>
       <PackageReference Include="MediatR" Version="12.2.0" />
+      <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.0-preview.1.24080.9" />
     </ItemGroup>
 
 </Project>
