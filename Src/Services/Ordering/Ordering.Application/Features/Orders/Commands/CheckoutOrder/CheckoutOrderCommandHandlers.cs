@@ -6,7 +6,7 @@ using Ordering.Application.Features.Orders.Queries.GetOrdersList;
 using Ordering.Application.Models;
 using Ordering.Domain.Entity;
 
-namespace Ordering.Application.Features.Orders.Commands.CheckoutOrders;
+namespace Ordering.Application.Features.Orders.Commands.CheckoutOrder;
 
 public class CheckoutOrderCommandHandlers : IRequestHandler<CheckoutOrderCommand, int>
 {
