@@ -1,7 +1,9 @@
 ﻿using MediatR;
 using Microsoft.Extensions.Logging;
 using Ordering.Application.Contracts.Persistence;
+using Ordering.Application.Exceptions;
 using Ordering.Application.Features.Orders.Queries.GetOrdersList;
+using Ordering.Domain.Entity;
 
 namespace Ordering.Application.Features.Orders.Commands.UpdateOrder;
 
@@ -22,7 +24,7 @@ public class UpdateOrderCommandHandler : IRequestHandler<UpdateOrderCommand>
         if(order is null)
         {
 
-            // throw new NotFoundException(nameof(Order), request.Id);
+            throw new NotFoundException(nameof(Order), request.Id);
             _logger.LogError("order does not exist in database");
         }
         
