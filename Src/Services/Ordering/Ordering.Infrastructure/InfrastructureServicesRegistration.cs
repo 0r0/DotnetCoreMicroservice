@@ -12,7 +12,7 @@ namespace Ordering.Infrastructure;
 
 public static class InfrastructureServicesRegistration
 {
-    public static IServiceCollection InfrastructureServices(this IServiceCollection services,
+    public static void InfrastructureServices(this IServiceCollection services,
         IConfiguration configuration)
     {
         services.AddDbContext<OrderContext>(options =>
@@ -21,6 +21,6 @@ public static class InfrastructureServicesRegistration
         services.AddScoped<IOrderRepository, OrderRepository>();
         services.Configure<EmailSettings>(_ => configuration.GetSection("EmailSettings"));
         services.AddTransient<IEmailService, EmailService>();
-        return services;
+        
     }
 }
