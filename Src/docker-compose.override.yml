@@ -108,12 +108,18 @@ services:
     ports:
       - "1433:1433"
   
+  rabbitmq:
+    container_name: rabbitmq
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
   
   ordering.api:
     container_name: ordering.api
     environment:
       - ASPNETCORE_ENVIRONMENT = Development
-      - "ConnectionStrings:OrderingConnectionString=Server=orderdb;Port:1433;Database=OrderDb;User Id=sa;Password=SwN12345678;"
+      - "ConnectionStrings:OrderingConnectionString=Server=orderdb;TrustServerCertificate=True;Database=OrderDb;User Id=sa;Password=SwN12345678;"
     depends_on: 
       - orderdb
     ports:

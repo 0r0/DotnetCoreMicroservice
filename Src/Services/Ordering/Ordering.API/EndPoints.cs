@@ -37,7 +37,7 @@ public static class EndPoints
             Results.NoContent();
         }).WithName("DeleteOrder");
         
-        group.MapDelete("/Order/{id}", async ( IMediator mediator,int id) =>
+        group.MapDelete("/Order/{id}", async (IMediator mediator,int id) =>
         {
             await mediator.Send(new DeleteOrderCommand(id)).ConfigureAwait(false);
             Results.NoContent();
