@@ -10,6 +10,9 @@
     <ItemGroup>
         <PackageReference Include="Asp.Versioning.Http" Version="8.0.0" />
         <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="8.0.0" />
+        <PackageReference Include="MassTransit" Version="8.2.3-develop.1806" />
+        <PackageReference Include="MassTransit.AspNetCore" Version="7.3.1" />
+        <PackageReference Include="MassTransit.RabbitMQ" Version="8.2.3-develop.1806" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.2" />
         <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="9.0.0-preview.1.24081.5" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
@@ -28,6 +31,11 @@
         <Protobuf Include="..\..\Discount\Discount.Grpc\Protos\Discount.proto" GrpcServices="Client" >
         <Link>Protos\Discount.proto</Link>
         </Protobuf>
+    </ItemGroup>
+    
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\BuildingBlocks\EventBus.Messages\EventBus.Messages.csproj" />
     </ItemGroup>
     
     

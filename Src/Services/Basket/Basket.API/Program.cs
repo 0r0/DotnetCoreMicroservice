@@ -5,6 +5,7 @@ using Basket.API;
 using Basket.API.GrpcServices;
 using Basket.API.Repositories;
 using Discount.Grpc.Protos;
+using MassTransit;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,8 +20,14 @@ builder.Services.AddStackExchangeRedisCache(opt =>
 builder.Services.AddScoped<IBasketRepository, BasketRepository>();
 
 builder.Services.AddGrpcClient<DiscountProtoService.DiscountProtoServiceClient>(a
-    =>a.Address = new Uri(builder.Configuration.GetValue<string>("GrpcSetting:DiscountUrl") ?? throw new NoNullAllowedException("Grpc Setting can not be null or empty")));
+    => a.Address = new Uri(builder.Configuration.GetValue<string>("GrpcSetting:DiscountUrl") ??
+                           throw new NoNullAllowedException("Grpc Setting can not be null or empty")));
 builder.Services.AddScoped<DiscountGrpcService>();
+
+builder.Services.AddMassTransit(config =>
+{
+    config.UsingRabbitMq((ctx, cfg) => { cfg.Host(builder.Configuration.GetValue<string>("EventBusSettings:HostAddress")); });
+});
 
 builder.Services.AddApiVersioning(options =>
 {
