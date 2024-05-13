@@ -1,5 +1,7 @@
 using Asp.Versioning;
 using Asp.Versioning.Builder;
+using EventBus.Messages.Common;
+using MassTransit;
 using Ordering.API;
 using Ordering.API.Extensions;
 using Ordering.Application;
@@ -24,9 +26,22 @@ builder.Services.AddApiVersioning(options =>
     options.GroupNameFormat = "'v'V";
     options.SubstituteApiVersionInUrl = true;
 });
+
 builder.Services.AddSwaggerGen();
 builder.Services.ApplicationServices();
 builder.Services.InfrastructureServices(builder.Configuration);
+builder.Services.AddMassTransit(config =>
+{
+    config.AddConsumer<BasketCheckoutConsumer>();
+    config.UsingRabbitMq((ctx, cfg)
+        =>
+    {
+        cfg.Host(builder.Configuration.GetValue<string>("EventBusSettings:HostAddress"));
+        cfg.ReceiveEndpoint(EventBusConstant.BasketCheckoutQueue,
+            c => { c.ConfigureConsumer<BasketCheckoutConsumer>(ctx); });
+    });
+});
+builder.Services.AddScoped<BasketCheckoutConsumer>();
 var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -37,7 +52,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.MigrateDatabase<OrderContext>((context,services) =>
+app.MigrateDatabase<OrderContext>((context, services) =>
 {
     var logger = services.GetRequiredService<ILogger<OrderContextSeed>>();
     OrderContextSeed.SeedAsync(context, logger).Wait();
@@ -49,4 +64,3 @@ ApiVersionSet apiVersionSet = app.NewApiVersionSet()
     .Build();
 app.OrderEndPoints(apiVersionSet);
 app.Run();
-
