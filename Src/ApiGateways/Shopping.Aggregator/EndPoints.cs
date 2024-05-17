@@ -1,4 +1,6 @@
-﻿using Asp.Versioning.Builder;
+﻿using System.Collections.Immutable;
+using Asp.Versioning.Builder;
+using Shopping.Aggregator.Models;
 using Shopping.Aggregator.Services;
 
 namespace Shopping.Aggregator;
@@ -23,7 +25,17 @@ public static class EndPoints
                     basketItem.ImageFile = product.ImageFile;
 
                 }
-                await Task.CompletedTask;
+
+                var orders = await orderService.GetOrdersByUserName(userName);
+
+                 var shoppingModel = new ShoppingModel()
+                {
+                    Orders = orders.ToImmutableList(),
+                    UserName = userName,
+                    BasketWithProducts = basket
+
+                };
+                return Results.Ok(shoppingModel);
             }
         );
     }
