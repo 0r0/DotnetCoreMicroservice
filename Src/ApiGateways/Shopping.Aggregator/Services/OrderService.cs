@@ -1,11 +1,20 @@
-﻿using Shopping.Aggregator.Models;
+﻿using Shopping.Aggregator.Extensions;
+using Shopping.Aggregator.Models;
 
 namespace Shopping.Aggregator.Services;
 
 public class OrderService : IOrderService
 {
-    public Task<IEnumerable<OrderResponseModel>> GetOrdersByUserName(string userName)
+    private readonly HttpClient _client;
+
+    public OrderService(HttpClient client)
     {
-        throw new NotImplementedException();
+        _client = client;
+    }
+
+    public async Task<IEnumerable<OrderResponseModel>> GetOrdersByUserName(string userName)
+    {
+       return await (await _client.GetAsync($"api/v{1}/Order/{userName}").ConfigureAwait(false))
+            .ReadContentAs<IReadOnlyCollection<OrderResponseModel>>();
     }
 }
