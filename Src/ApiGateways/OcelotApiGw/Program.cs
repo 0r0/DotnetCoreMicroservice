@@ -1,3 +1,4 @@
+using Ocelot.Cache.CacheManager;
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
 
@@ -9,9 +10,10 @@ builder.Host.ConfigureLogging(((context, loggingBuilder) =>
             loggingBuilder.AddDebug();
         }
         ));
-builder.Services.AddOcelot();
+builder.Services.AddOcelot().AddCacheManager(settings
+    =>settings.WithDictionaryHandle());
 var app = builder.Build();
 
-app.MapGet("/", () => "Hello World!");
+
 await app.UseOcelot();
 app.Run();
