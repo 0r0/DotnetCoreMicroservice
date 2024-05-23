@@ -42,13 +42,13 @@ services:
     container_name: discountdb
     restart: always
     environment:
-      - POSTGRES_USER=admin 
+      - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=admin1234
-      - POSTGRES_DB=DiscountDB 
+      - POSTGRES_DB=DiscountDB
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data/  
+      - postgres_data:/var/lib/postgresql/data/
   
   
   
@@ -72,7 +72,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - "CacheSetting:ConnectionString=basketdb:6379"
       - "GrpcSetting:DiscountUrl=http://host.docker.internal:8003"
-      - "EventBusSettings:HostAddress=amqp://guest:guest@localhost:5672"
+      - "EventBusSettings:HostAddress=amqp://guest:guest@rabbitmq:5672"
 
     depends_on:
       - basketdb
@@ -86,7 +86,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - "DatabaseSettings:ConnectionString=Server=discountdb;Port=5432;Database=DiscountDB;User Id=admin;Password=admin1234"
-    depends_on: 
+    depends_on:
       - discountdb
     ports:
       - "8002:8080"
@@ -97,7 +97,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT = Development
       - "DatabaseSettings:ConnectionString=Server=discountdb;Port=5432;Database=DiscountDB;User Id=admin;Password=admin1234"
-    depends_on: 
+    depends_on:
       - discountdb
     ports:
       - "8003:8080"
@@ -105,14 +105,17 @@ services:
   orderdb:
     container_name: orderdb
     environment:
-      MSSQL_SA_PASSWORD : "SwN12345678"
-      ACCEPT_EULA : "Y"
+      MSSQL_SA_PASSWORD: "SwN12345678"
+      ACCEPT_EULA: "Y"
     restart: always
     ports:
       - "1433:1433"
   
   rabbitmq:
     container_name: rabbitmq
+    environment:
+      - RABBITMQ_PASSWORD=guest
+      - RABBITMQ_USERNAME=guest
     restart: always
     ports:
       - "5672:5672"
@@ -123,11 +126,34 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT = Development
       - "ConnectionStrings:OrderingConnectionString=Server=orderdb;TrustServerCertificate=True;Database=OrderDb;User Id=sa;Password=SwN12345678;"
-      - "EventBusSettings:HostAddress=amqp://guest:guest@localhost:5672"
-    depends_on: 
+      - "EventBusSettings:HostAddress=amqp://guest:guest@rabbitmq:5672"
+    depends_on:
       - orderdb
       - rabbitmq
     ports:
       - "8004:8080"
-    
-    
+  
+  ocelotapigw:
+    container_name: ocelotapigw
+    environment:
+      - ASPNETCORE_ENVIRONMENT = Development
+    depends_on:
+      - catalog.api
+      - basket.api
+      - ordering.api
+      - discount.api
+    ports:
+      - "8010:8080"
+  
+  
+  shopping.aggregator:
+    container_name: shopping.aggregator
+    environment:
+      - ASPNETCORE_ENVIRONMENT = Development
+      - "ApiSettings:CatalogUrl=http://catalog.api"
+      - "ApiSettings:BasketUrl=http://basket.api"
+      - "ApiSettings:OrderingUrl=http://ordering.api"
+    ports:
+      - "8005:8080"
+      
+      

@@ -35,6 +35,22 @@ public class OrderContextSeed
                 TotalPrice = 1000000,
                 UserName = "swn",
                 CVV = "313"
+            } ,  new Order()
+            {
+                Country = "Sweden",
+                Expiration = "Unknown",
+                State = "Gotenburg",
+                AddressLine = "StockHolm.Gotenburg",
+                CardName = "Mehdi",
+                CardNumber = "1234",
+                FirstName = "Mehdi",
+                EmailAddress = "Mehdi.goharinezhad@gmail.com",
+                LastName = "Goharinezhad",
+                ZipCode = "1234",
+                PaymentMethod = 1,
+                TotalPrice = 1000000,
+                UserName = "swn",
+                CVV = "313"
             }
         };
     }
