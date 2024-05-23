@@ -1,21 +1,41 @@
-﻿using Shopping.Web.Models;
+﻿using Shopping.Web.Extensions;
+using Shopping.Web.Models;
 
 namespace Shopping.Web.Services;
 
 public class BasketService : IBasketService
 {
-    public Task<BasketModel> GetBasket(string userName)
+    private readonly HttpClient _client;
+
+    public BasketService(HttpClient httpClient)
     {
-        throw new NotImplementedException();
+        _client = httpClient;
     }
 
-    public Task<BasketModel> UpdateBasket(BasketModel model)
+    public async Task<BasketModel> GetBasket(string userName)
     {
-        throw new NotImplementedException();
+        var response = (await _client.GetAsync("/Basket/{userName}")
+            .ConfigureAwait(false));
+        return response.IsSuccessStatusCode
+            ? await response.ReadContentAs<BasketModel>()
+            : throw new Exception("sth get wrong in calling api");
     }
 
-    public Task CheckoutBasket(BasketCheckoutModel model)
+    public async Task<BasketModel> UpdateBasket(BasketModel model)
     {
-        throw new NotImplementedException();
+        var response = await _client.PutAsJson("/Basket", model);
+
+        return response.IsSuccessStatusCode
+            ? await response.ReadContentAs<BasketModel>()
+            : throw new Exception("Something went wrong when calling api.");
+    }
+
+    public async Task CheckoutBasket(BasketCheckoutModel model)
+    {
+        var response = await _client.PostAsJson($"/Basket/Checkout", model);
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new Exception("Something went wrong when calling api.");
+        }
     }
 }

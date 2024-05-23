@@ -1,26 +1,41 @@
-﻿using Shopping.Web.Models;
+﻿using Shopping.Web.Extensions;
+using Shopping.Web.Models;
 
 namespace Shopping.Web.Services;
 
 public class CatalogService : ICatalogService
 {
-    public Task<CatalogModel> GetCatalog(string id)
+    private readonly HttpClient _httpClient;
+
+    public CatalogService(HttpClient httpClient)
     {
-        throw new NotImplementedException();
+        _httpClient = httpClient;
     }
 
-    public Task<IEnumerable<CatalogModel>> GetCatalog()
+    public async Task<CatalogModel> GetCatalog(string id)
     {
-        throw new NotImplementedException();
+        return await (await _httpClient.GetAsync($"/api/v1/Catalog/{id}").ConfigureAwait(false))
+            .ReadContentAs<CatalogModel>();
     }
 
-    public Task<IEnumerable<CatalogModel>> GetCatalogByCategory(string category)
+    public async Task<IEnumerable<CatalogModel>> GetCatalog()
     {
-        throw new NotImplementedException();
+        return await (await _httpClient.GetAsync("api/v1/Catalog").ConfigureAwait(false))
+            .ReadContentAs<IReadOnlyCollection<CatalogModel>>();
     }
 
-    public Task<CatalogModel> CreateCatalog(CatalogModel model)
+    public async Task<IEnumerable<CatalogModel>> GetCatalogByCategory(string category)
     {
-        throw new NotImplementedException();
+        return await (await _httpClient.GetAsync($"api/v{1}/Catalog/getProductByCategory/{category}")
+                .ConfigureAwait(false))
+            .ReadContentAs<IReadOnlyCollection<CatalogModel>>();
+    }
+
+    public async Task<CatalogModel> CreateCatalog(CatalogModel model)
+    {
+        var response = await _httpClient.PostAsJson("api/v1/Catalog", model).ConfigureAwait(false);
+        return response.IsSuccessStatusCode
+            ? await response.ReadContentAs<CatalogModel>()
+            : throw new Exception($"catalog with {model.Id} is not created");
     }
 }
