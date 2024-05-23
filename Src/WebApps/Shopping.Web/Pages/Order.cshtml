@@ -1,5 +1,5 @@
 ﻿@page
-
+@model AspnetRunBasics.OrderModel
 @{
     ViewData["Title"] = "Order";
 }
@@ -25,19 +25,26 @@
                     <thead>
                         <tr>
                             <th scope="col"> </th>
-                            <th scope="col">Order Name</th>
                             <th scope="col">First Name</th>
                             <th scope="col">Last Name</th>
                             <th scope="col">Email</th>
-                            <th scope="col">AddressLine</th>
-                            <th scope="col">CardName</th>
-                            <th scope="col">OrderStatus</th>
+                            <th scope="col">Address</th>
                             <th scope="col" class="text-right">TotalPrice</th>
                         </tr>
                     </thead>
                     <tbody>
 
-                       
+                        @foreach (var order in Model.Orders)
+                        {
+                            <tr>
+                                <td><img src="https://dummyimage.com/50x50/55595c/fff" /></td>
+                                <td>@order.FirstName</td>
+                                <td>@order.LastName</td>
+                                <td>@order.EmailAddress</td>
+                                <td>@order.AddressLine</td>
+                                <td class="text-right">@order.TotalPrice $</td>
+                            </tr>
+                        }
                     </tbody>
                 </table>
             </div>
@@ -51,4 +58,3 @@
         </div>
     </div>
 </div>
-

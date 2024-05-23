@@ -1,8 +1,8 @@
-namespace Shopping.Web.Pages
+﻿namespace AspnetRunBasics
 {
     public class ConfirmationModel : PageModel
     {
-        public string Message { get; set; } = default!;
+        public string Message { get; set; }
 
         public void OnGetContact()
         {

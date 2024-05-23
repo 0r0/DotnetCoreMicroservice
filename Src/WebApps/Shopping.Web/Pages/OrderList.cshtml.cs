@@ -1,4 +1,0 @@
-namespace Shopping.Web.Pages
-{
-
-}
