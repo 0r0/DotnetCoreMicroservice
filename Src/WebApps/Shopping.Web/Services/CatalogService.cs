@@ -6,14 +6,17 @@ namespace Shopping.Web.Services;
 public class CatalogService : ICatalogService
 {
     private readonly HttpClient _httpClient;
+    private readonly ILogger<CatalogService> _logger;
 
-    public CatalogService(HttpClient httpClient)
+    public CatalogService(HttpClient httpClient, ILogger<CatalogService> logger)
     {
         _httpClient = httpClient;
+        _logger = logger;
     }
 
     public async Task<CatalogModel> GetCatalog(string id)
     {
+        _logger.LogInformation("getting catalog products from url:{url}",_httpClient.BaseAddress);
         return await (await _httpClient.GetAsync($"/Catalog/{id}").ConfigureAwait(false))
             .ReadContentAs<CatalogModel>();
     }

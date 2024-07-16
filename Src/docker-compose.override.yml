@@ -7,16 +7,16 @@ services:
       - '27017:27017'
     volumes:
       - mongo_data:/data/db
-  
-  
-  
+
+
+
   basketdb:
     container_name: basketdb
     restart: always
     ports:
       - "6379:6379"
-  
-  
+
+
   portainer:
     container_name: portainer
     restart: always
@@ -26,7 +26,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - portainer_data:/data
-  
+
   pgadmin:
     container_name: pgadmin
     restart: always
@@ -37,7 +37,7 @@ services:
       - PGADMIN_DEFAULT_PASSWORD=admin@123
     volumes:
       - pgadmin_data:/root/.pgadmin
-  
+
   discountdb:
     container_name: discountdb
     restart: always
@@ -49,10 +49,10 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data/
-  
-  
-  
-  
+
+
+
+
   catalog.api:
     container_name: catalog.api
     environment:
@@ -62,10 +62,10 @@ services:
       - catalogdb
     ports:
       - "8000:8080"
-  
-  
-  
-  
+
+
+
+
   basket.api:
     container_name: basket.api
     environment:
@@ -79,8 +79,8 @@ services:
       - rabbitmq
     ports:
       - "8001:8080"
-  
-  
+
+
   discount.api:
     container_name: discount.api
     environment:
@@ -90,8 +90,8 @@ services:
       - discountdb
     ports:
       - "8002:8080"
-  
-  
+
+
   discount.grpc:
     container_name: discount.grpc
     environment:
@@ -101,7 +101,7 @@ services:
       - discountdb
     ports:
       - "8003:8080"
-  
+
   orderdb:
     container_name: orderdb
     environment:
@@ -110,7 +110,7 @@ services:
     restart: always
     ports:
       - "1433:1433"
-  
+
   rabbitmq:
     container_name: rabbitmq
     environment:
@@ -120,7 +120,7 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
-  
+
   ordering.api:
     container_name: ordering.api
     environment:
@@ -132,7 +132,7 @@ services:
       - rabbitmq
     ports:
       - "8004:8080"
-  
+
   ocelotapigw:
     container_name: ocelotapigw
     environment:
@@ -144,8 +144,8 @@ services:
       - discount.api
     ports:
       - "8010:8080"
-  
-  
+
+
   shopping.aggregator:
     container_name: shopping.aggregator
     environment:
@@ -155,5 +155,36 @@ services:
       - "ApiSettings:OrderingUrl=http://ordering.api"
     ports:
       - "8005:8080"
+  
+  
+  elasticsearch:
+    container_name: elasticsearch
+    environment:
+      - ELASTIC_PASSWORD=123change...
+      - discovery.type=single-node
+      - xpack.security.enabled=true
+      - path.data=/usr/share/elasticsearch/data
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    
+    ports:
+      - "9200:9200"
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+
+  kibana:
+    container_name: kibana
+    environment:
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+      #      - ELASTICSEARCH_USERNAME=elastic
+      #      - ELASTICSEARCH_PASSWORD="123change..."
+      - ELASTICSEARCH_SERVICEACCOUNTTOKEN=AAEAAWVsYXN0aWMva2liYW5hL3Rva2VuMTpEeUdQRm1lQVRFNno0UHlUTnJZeEVR
+      - XPACK_SECURITY_ENABLED=true
+      - PATH_DATA=/usr/share/kibana/data
+    depends_on:
+      - elasticsearch
+    ports:
+      - "5601:5601" 
+      
       
       
