@@ -2,8 +2,12 @@ using Asp.Versioning;
 using Asp.Versioning.Builder;
 using Catalog.API.Data;
 using Catalog.API.Repositories;
+using Common.Logging;
+using Serilog;
 using static Catalog.API.Endpoints;
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddTransient<LoggingDelegatingHandler>();
+builder.Host.UseSerilog(SeriLogger.Configure);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddApiVersioning(options =>
 {
