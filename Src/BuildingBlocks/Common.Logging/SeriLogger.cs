@@ -15,6 +15,7 @@ public static class SeriLogger
         configuration.Enrich.FromLogContext()
             .Enrich.WithMachineName()
             .WriteTo.Console()
+            .WriteTo.Debug()
             .WriteTo.Elasticsearch(new[] {new Uri(context.Configuration["ElasticConfiguration:Uri"])}, opt =>
                 {
                     opt.DataStream = new 
