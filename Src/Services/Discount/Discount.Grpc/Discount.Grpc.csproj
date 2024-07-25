@@ -16,12 +16,12 @@
         <Protobuf Include="Protos\Discount.proto" GrpcServices="Server"/>
     </ItemGroup>
     <ItemGroup>
+      <ProjectReference Include="..\..\..\BuildingBlocks\Common.Logging\Common.Logging.csproj" />
+    </ItemGroup>
+    <ItemGroup>
       <Content Include="..\..\..\.dockerignore">
         <Link>.dockerignore</Link>
       </Content>
-    </ItemGroup>
-    <ItemGroup>
-      <ProjectReference Include="..\..\..\BuildingBlocks\Common.Logging\Common.Logging.csproj" />
     </ItemGroup>
 
 </Project>
