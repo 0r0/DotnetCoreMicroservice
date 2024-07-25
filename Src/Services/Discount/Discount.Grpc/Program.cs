@@ -1,11 +1,14 @@
+using Common.Logging;
 using Discount.Grpc;
 using Discount.Grpc.Repositories;
 using Discount.Grpc.Services;
+using Serilog;
 
 // using Discount.Grpc.Services;
 
 var builder = WebApplication.CreateBuilder(args);
-
+builder.Services.AddTransient<LoggingDelegatingHandler>();
+builder.Host.UseSerilog(SeriLogger.Configure);
 // Add services to the container.
 builder.Services.AddGrpc();
 builder.Services.AddScoped<IDiscountRepository, DiscountRepository>();
