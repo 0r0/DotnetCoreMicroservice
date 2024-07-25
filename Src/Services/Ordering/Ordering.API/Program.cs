@@ -1,5 +1,6 @@
 using Asp.Versioning;
 using Asp.Versioning.Builder;
+using Common.Logging;
 using EventBus.Messages.Common;
 using MassTransit;
 using Ordering.API;
@@ -7,9 +8,11 @@ using Ordering.API.Extensions;
 using Ordering.Application;
 using Ordering.Infrastructure;
 using Ordering.Infrastructure.Persistence;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
-
+builder.Services.AddTransient<LoggingDelegatingHandler>();
+builder.Host.UseSerilog(SeriLogger.Configure);
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

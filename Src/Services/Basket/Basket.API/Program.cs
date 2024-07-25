@@ -4,13 +4,17 @@ using Asp.Versioning.Builder;
 using Basket.API;
 using Basket.API.GrpcServices;
 using Basket.API.Repositories;
+using Common.Logging;
 using Discount.Grpc.Protos;
 using MassTransit;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddTransient<LoggingDelegatingHandler>();
+builder.Host.UseSerilog(SeriLogger.Configure);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddStackExchangeRedisCache(opt =>
@@ -26,7 +30,10 @@ builder.Services.AddScoped<DiscountGrpcService>();
 
 builder.Services.AddMassTransit(config =>
 {
-    config.UsingRabbitMq((ctx, cfg) => { cfg.Host(builder.Configuration.GetValue<string>("EventBusSettings:HostAddress")); });
+    config.UsingRabbitMq((ctx, cfg) =>
+    {
+        cfg.Host(builder.Configuration.GetValue<string>("EventBusSettings:HostAddress"));
+    });
 });
 
 builder.Services.AddApiVersioning(options =>

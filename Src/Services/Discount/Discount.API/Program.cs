@@ -1,13 +1,17 @@
 using Asp.Versioning;
 using Asp.Versioning.Builder;
+using Common.Logging;
 using Discount.API;
 using Discount.API.Repositories;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddTransient<LoggingDelegatingHandler>();
+builder.Host.UseSerilog(SeriLogger.Configure);
 builder.Services.AddApiVersioning(options =>
 {
     options.DefaultApiVersion = new ApiVersion(1);
