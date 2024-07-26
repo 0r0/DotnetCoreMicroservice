@@ -23,6 +23,7 @@ builder.Services.AddApiVersioning(options =>
     options.GroupNameFormat = "'v'V";
     options.SubstituteApiVersionInUrl = true;
 });
+builder.Services.AddTransient<LoggingDelegatingHandler>();
 builder.Host.UseSerilog(SeriLogger.Configure);
 
 builder.Services.AddSwaggerGen();

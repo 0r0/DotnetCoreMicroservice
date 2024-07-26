@@ -18,8 +18,8 @@ public static class SeriLogger
             .WriteTo.Debug()
             .WriteTo.Elasticsearch(new[] {new Uri(context.Configuration["ElasticConfiguration:Uri"])}, opt =>
                 {
-                    opt.DataStream = new 
-                        DataStreamName("logs", "appLogs", 
+                    opt.DataStream = new
+                        DataStreamName("logs", "appLogs",
                             Assembly.GetExecutingAssembly()
                                 .GetName().Name.ToLower()
                                 .Replace(".", "-") + "-" +
