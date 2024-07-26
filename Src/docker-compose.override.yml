@@ -184,10 +184,6 @@ services:
     container_name: kibana
     environment:
       - ELASTICSEARCH_URL=http://elasticsearch:9200
-#      - ELASTICSEARCH_USERNAME=elastic
-#      - ELASTICSEARCH_PASSWORD="123change..."
-#      - XPACK_SECURITY_ENABLED=true
-#      - PATH_DATA=/usr/share/kibana/data
     depends_on:
       - elasticsearch
     ports:
