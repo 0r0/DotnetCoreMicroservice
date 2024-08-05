@@ -1,6 +1,7 @@
 using Asp.Versioning;
 using Asp.Versioning.Builder;
 using Common.Logging;
+using Polly;
 using Serilog;
 using Shopping.Aggregator;
 using Shopping.Aggregator.Services;
@@ -28,18 +29,25 @@ builder.Host.UseSerilog(SeriLogger.Configure);
 
 builder.Services.AddSwaggerGen();
 builder.Services.AddTransient<LoggingDelegatingHandler>();
+
 builder.Services.AddHttpClient<ICatalogService, CatalogService>(c => c.BaseAddress =
         new Uri(builder.Configuration.GetValue<string>("ApiSettings:CatalogUrl") ??
                 throw new ArgumentNullException(nameof(c), "api settings for order can not be null")))
     .AddHttpMessageHandler<LoggingDelegatingHandler>();
+
 builder.Services.AddHttpClient<IBasketService, BasketService>(c => c.BaseAddress =
         new Uri(builder.Configuration.GetValue<string>("ApiSettings:BasketUrl") ??
                 throw new ArgumentNullException(nameof(c), "api settings for order can not be null")))
-    .AddHttpMessageHandler<LoggingDelegatingHandler>();
+    .AddHttpMessageHandler<LoggingDelegatingHandler>()
+    .AddTransientHttpErrorPolicy(policy=>
+        policy.WaitAndRetryAsync(3,_=>TimeSpan.FromSeconds(2)))
+    .AddTransientHttpErrorPolicy(policy=>policy.CircuitBreakerAsync(5,TimeSpan.FromSeconds(30)));
+
 builder.Services.AddHttpClient<IOrderService, OrderService>(c => c.BaseAddress =
         new Uri(builder.Configuration.GetValue<string>("ApiSettings:OrderingUrl") ??
                 throw new ArgumentNullException(nameof(c), "api settings for order can not be null")))
     .AddHttpMessageHandler<LoggingDelegatingHandler>();
+
 var app = builder.Build();
 ApiVersionSet apiVersionSet = app.NewApiVersionSet()
     .HasApiVersion(new ApiVersion(1))

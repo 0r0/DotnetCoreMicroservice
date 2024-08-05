@@ -5,6 +5,7 @@ using Elastic.Serilog.Sinks;
 using Elastic.Transport;
 using Microsoft.Extensions.Hosting;
 using Serilog;
+using Serilog.Exceptions;
 
 namespace Common.Logging;
 
@@ -14,6 +15,7 @@ public static class SeriLogger
     {
         configuration.Enrich.FromLogContext()
             .Enrich.WithMachineName()
+            .Enrich.WithExceptionDetails()
             .WriteTo.Console()
             .WriteTo.Debug()
             .WriteTo.Elasticsearch(new[] {new Uri(context.Configuration["ElasticConfiguration:Uri"])}, opt =>
