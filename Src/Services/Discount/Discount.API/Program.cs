@@ -3,6 +3,8 @@ using Asp.Versioning.Builder;
 using Common.Logging;
 using Discount.API;
 using Discount.API.Repositories;
+using HealthChecks.UI.Client;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +14,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddTransient<LoggingDelegatingHandler>();
 builder.Host.UseSerilog(SeriLogger.Configure);
+builder.Services.AddHealthChecks().AddNpgSql(
+    builder.Configuration.GetValue<string>("DatabaseSettings:ConnectionString"));
 builder.Services.AddApiVersioning(options =>
 {
     options.DefaultApiVersion = new ApiVersion(1);
@@ -28,7 +32,11 @@ builder.Services.AddApiVersioning(options =>
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IDiscountRepository, DiscountRepository>();
 var app = builder.Build();
-
+app.UseHealthChecks("/hc",new HealthCheckOptions()
+{
+    Predicate = _=>true,
+    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+});
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
