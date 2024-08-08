@@ -6,7 +6,10 @@ using Basket.API.GrpcServices;
 using Basket.API.Repositories;
 using Common.Logging;
 using Discount.Grpc.Protos;
+using HealthChecks.UI.Client;
 using MassTransit;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,7 +23,9 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddStackExchangeRedisCache(opt =>
     opt.Configuration = builder.Configuration.GetValue<string>("CacheSetting:ConnectionString")
 );
-
+builder.Services.AddHealthChecks()
+    .AddRedis(builder.Configuration.GetValue<string>("CacheSetting:ConnectionString") ??
+              throw new ArgumentNullException(paramName: "redis settings" ,"redis cache settings can not be null"),"Redis health",HealthStatus.Degraded);
 builder.Services.AddScoped<IBasketRepository, BasketRepository>();
 
 builder.Services.AddGrpcClient<DiscountProtoService.DiscountProtoServiceClient>(a
@@ -50,13 +55,17 @@ builder.Services.AddApiVersioning(options =>
     options.SubstituteApiVersionInUrl = true;
 });
 var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+app.UseHealthChecks("/hc",new HealthCheckOptions()
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+     Predicate = _=>true,
+     ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+});
+// Configure the HTTP request pipeline.
+// if (app.Environment.IsDevelopment())
+// {
+app.UseSwagger();
+app.UseSwaggerUI();
+// }
 
 app.UseHttpsRedirection();
 ApiVersionSet apiVersionSet = app.NewApiVersionSet()
