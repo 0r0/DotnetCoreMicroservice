@@ -1,14 +1,15 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Polly;
 
 namespace Ordering.API.Extensions;
 
 public static class AppExtensions
 {
     public static void MigrateDatabase<TContext>(this WebApplication application,
-        Action<TContext,IServiceProvider> seeder,int? retry = 0) where TContext:DbContext
+        Action<TContext,IServiceProvider> seeder) where TContext:DbContext
     {
-        int retryForAvailability = retry.Value;
+       
         using (var scope =application.Services.CreateScope())
         {
             var services = scope.ServiceProvider;
@@ -16,18 +17,24 @@ public static class AppExtensions
             var context = services.GetService<TContext>();
             try
             {
+                
                 logger.LogInformation("Migration database with association context {DbContextName}",nameof(TContext));
-                InvokeSeeder(seeder,context,services);
+                var retry = Policy.Handle<SqlException>()
+                    .WaitAndRetry(
+                        retryCount: 5,
+                        sleepDurationProvider: (retryAttempt) => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
+                        onRetry: (exception, retryCount, context) =>
+                        {
+                            logger.LogError($"Retry {retryCount} of {context.PolicyKey} at {context.OperationKey}, due to: {exception}.");
+                        });
+                    
+                retry.Execute(() => InvokeSeeder(seeder, context, services));
+                logger.LogInformation("Migrated database associated with context {DbContextName}", typeof(TContext).Name);
             }
             catch (SqlException e)
             {
                 logger.LogError(e,"an error occured while migrating the database using in context");
-                if (retryForAvailability < 50)
-                {
-                    retryForAvailability++;
-                    Thread.Sleep(2000);
-                    MigrateDatabase(application,seeder,retryForAvailability);
-                }
+                
             }
         }
         
