@@ -10,6 +10,7 @@
     <ItemGroup>
         <PackageReference Include="Asp.Versioning.Http" Version="8.0.0" />
         <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="8.0.0" />
+        <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="8.0.1" />
         <PackageReference Include="MediatR" Version="12.2.0" />
         <PackageReference Include="MassTransit" Version="8.2.3-develop.1806" />
         <PackageReference Include="MassTransit.AspNetCore" Version="7.3.1" />
@@ -19,6 +20,8 @@
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
+        <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="8.0.8" />
+
         <PackageReference Include="Polly" Version="7.2.4" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0"/>
     </ItemGroup>

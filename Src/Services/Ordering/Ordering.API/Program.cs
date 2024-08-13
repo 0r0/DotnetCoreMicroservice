@@ -2,7 +2,9 @@ using Asp.Versioning;
 using Asp.Versioning.Builder;
 using Common.Logging;
 using EventBus.Messages.Common;
+using HealthChecks.UI.Client;
 using MassTransit;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Ordering.API;
 using Ordering.API.Extensions;
 using Ordering.Application;
@@ -15,6 +17,8 @@ builder.Services.AddTransient<LoggingDelegatingHandler>();
 builder.Host.UseSerilog(SeriLogger.Configure);
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
+builder.Services.AddHealthChecks().AddDbContextCheck<OrderContext>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddApiVersioning(options =>
 {
@@ -54,7 +58,11 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.MapHealthChecks("/hc", new HealthCheckOptions()
+{
+    Predicate = _ => true,
+    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+});
 app.MigrateDatabase<OrderContext>((context, services) =>
 {
     var logger = services.GetRequiredService<ILogger<OrderContextSeed>>();
