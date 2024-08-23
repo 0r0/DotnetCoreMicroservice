@@ -1,6 +1,8 @@
 using Asp.Versioning;
 using Asp.Versioning.Builder;
 using Common.Logging;
+using HealthChecks.UI.Client;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Polly;
 using Serilog;
@@ -59,6 +61,11 @@ builder.Services.AddHealthChecks().AddUrlGroup(
 
 
 var app = builder.Build();
+app.MapHealthChecks("/hc",new HealthCheckOptions()
+{
+    Predicate = _=>true,
+    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+});
 ApiVersionSet apiVersionSet = app.NewApiVersionSet()
     .HasApiVersion(new ApiVersion(1))
     .ReportApiVersions()
