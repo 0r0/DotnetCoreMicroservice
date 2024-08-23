@@ -13,17 +13,18 @@ builder.Services.AddRazorPages();
 builder.Host.UseSerilog(SeriLogger.Configure);
 builder.Services.AddHealthChecks()
     .AddUrlGroup(new Uri(builder.Configuration["ApiSettings:GatewayAddress"]), "Ocelot API Gw", HealthStatus.Degraded);builder.Services.AddTransient<LoggingDelegatingHandler>();
+
 builder.Services.AddHttpClient<ICatalogService, CatalogService>(c =>
-        c.BaseAddress = new Uri(builder.Configuration.GetValue<string>("ApiSettings:GatewayAddress")
-                                ?? throw new NoNullAllowedException("gateway address can not be null!")))
+        c.BaseAddress = new Uri(builder.Configuration.GetValue<string>("ApiSettings:CatalogApi")
+                                ?? throw new NoNullAllowedException("CatalogApi address can not be null!")))
     .AddHttpMessageHandler<LoggingDelegatingHandler>();
 builder.Services.AddHttpClient<IOrderService, OrderService>(c =>
-        c.BaseAddress = new Uri(builder.Configuration.GetValue<string>("ApiSettings:GatewayAddress")
-                                ?? throw new NoNullAllowedException("gateway address can not be null!")))
+        c.BaseAddress = new Uri(builder.Configuration.GetValue<string>("ApiSettings:OrderApi")
+                                ?? throw new NoNullAllowedException("OrderApi address can not be null!")))
     .AddHttpMessageHandler<LoggingDelegatingHandler>();
 builder.Services.AddHttpClient<IBasketService, BasketService>(c =>
-        c.BaseAddress = new Uri(builder.Configuration.GetValue<string>("ApiSettings:GatewayAddress")
-                                ?? throw new NoNullAllowedException("gateway address can not be null!")))
+        c.BaseAddress = new Uri(builder.Configuration.GetValue<string>("ApiSettings:BasketApi")
+                                ?? throw new NoNullAllowedException("BasketApi address can not be null!")))
     .AddHttpMessageHandler<LoggingDelegatingHandler>();
 var app = builder.Build();
 
