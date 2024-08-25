@@ -80,8 +80,17 @@ services:
   kibana:
     image: docker.elastic.co/kibana/kibana:8.14.3
     
+  webstatus:
+    image: ${DOCKER_REGISTRY-}webstatus
+    build:
+      context: .
+      dockerfile: WebApps/Webstatus/Dockerfile
   
-    
+  aspnetrunbasics:
+    image: ${DOCKER_REGISTRY-}aspnetrunbasics
+    build:
+      context: .
+      dockerfile:  WebApps/Shopping.Web/Dockerfile
 volumes:
   mongo_data: 
   portainer_data: 

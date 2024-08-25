@@ -6,6 +6,7 @@ using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddJsonFile($"ocelot.{builder.Environment.EnvironmentName}.json", true, true);
+builder.Configuration.AddJsonFile("ocelot.json", true, true);
 builder.Services.AddTransient<LoggingDelegatingHandler>();
 builder.Host.UseSerilog(SeriLogger.Configure);
 builder.Services.AddOcelot().AddCacheManager(settings
@@ -13,5 +14,8 @@ builder.Services.AddOcelot().AddCacheManager(settings
 var app = builder.Build();
 
 
+app.UseRouting();
+
+app.UseEndpoints(_ => { });
 await app.UseOcelot();
 app.Run();
